@@ -113,7 +113,7 @@
   #fileInput{display:none;}
 
   /* ===== Stat cards ===== */
-  .stats{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px;}
+  .stats{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:20px;}
   .stat-card{
     background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
     padding:16px 16px 15px; box-shadow:var(--shadow); position:relative; border-left:4px solid var(--blue);
@@ -251,7 +251,6 @@
         <button class="btn on-dark" id="clearHistoryBtn" style="color:#F3A6A6;">Clear history</button>
       </div>
     </div>
-    <div class="topbar-nav" id="binTabs" style="display:none;"></div>
   </div>
 </div>
 
@@ -322,12 +321,11 @@
     <div class="result-count" id="resultCount"></div>
 
     <div class="table-card">
-      <div class="table-card-head"><span class="dot-icon"></span><span id="tableHeadLabel">Stock</span></div>
+      <div class="table-card-head"><span class="dot-icon"></span><span>All stock</span></div>
       <table id="stockTable">
         <thead>
           <tr>
             <th id="thName">Product</th>
-            <th id="thCat" style="display:none;">Category</th>
             <th class="numcol">Qty</th>
             <th class="numcol">Rate (₹)</th>
             <th class="numcol">GST Rate (₹)</th>
@@ -358,7 +356,6 @@ const stockRef = firebase.database().ref('stock-data');
 
 let categories = [];
 let usageLog = [];
-let activeCategory = 'ALL';
 let sortState = 'name-asc';
 let currentFileName = '';
 let productLookup = {};
@@ -373,7 +370,6 @@ const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 const dzTitle = document.getElementById('dzTitle');
 const dzSub = document.getElementById('dzSub');
 const badges = document.getElementById('badges');
-const binTabsTop = document.getElementById('binTabs');
 const useProductBtn = document.getElementById('useProductBtn');
 const usePanel = document.getElementById('usePanel');
 const useProductInput = document.getElementById('useProductInput');
@@ -407,20 +403,12 @@ fileInput.addEventListener('change', e=>{
 clearHistoryBtn.addEventListener('click', async () => {
   if(!confirm('Clear the saved stock data from the cloud? This cannot be undone.')) return;
   try{ await stockRef.remove(); }catch(err){ console.error('Could not clear stock data:', err); }
-  categories = [];
-  usageLog = [];
-  activeCategory = 'ALL';
-  content.style.display = 'none';
-  headerActions.style.display = 'none';
-  binTabsTop.style.display = 'none';
-  usePanel.style.display = 'none';
-  usageCard.style.display = 'none';
-  badges.innerHTML = '';
-  dzTitle.textContent = 'Drop your stock Excel file here';
-  dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved to the cloud so it's available on any device.";
-  dropzone.style.display = 'block';
-  document.getElementById('brandName').textContent = 'Stock Viewer';
-  document.getElementById('brandSub').textContent = 'Inventory · Stock Group Summary';
+  // Hard reload instead of just resetting in-memory variables. This app keeps everything
+  // under one shared Firebase key with no per-tab/device isolation, so a stale tab that
+  // still has the old `categories` sitting in memory can re-save and bring old stock back
+  // the moment it does anything that calls saveAll(). A full reload guarantees this tab
+  // can never re-push stale data after a clear.
+  location.reload();
 });
 
 useProductBtn.addEventListener('click', () => {
@@ -449,7 +437,6 @@ function handleFile(file){
         return;
       }
       usageLog = [];
-      activeCategory = 'ALL';
       sortState = 'name-asc';
       currentFileName = file.name;
       document.getElementById('sortSelect').value = sortState;
@@ -542,7 +529,6 @@ async function loadFromStorage(){
       categories = parsed.categories;
       usageLog = parsed.usageLog || [];
       currentFileName = parsed.fileName || 'Saved stock';
-      activeCategory = 'ALL';
       renderAll(currentFileName, true);
       return;
     }
@@ -560,13 +546,11 @@ function renderAll(fileName, restored){
   dropzone.style.display = 'none';
   content.style.display = 'block';
   headerActions.style.display = 'flex';
-  binTabsTop.style.display = 'flex';
   document.getElementById('brandName').textContent = 'Current Stock';
   document.getElementById('brandSub').textContent = fileName;
   setBadge(true);
 
   renderStats();
-  renderTabs();
   attachControlEvents();
   renderTable();
   renderUsageLog();
@@ -591,7 +575,6 @@ function renderStats(){
   const totalValue = items.reduce((s,i)=>s+(i.value||0),0);
   const lowCount = items.filter(i=>i.qty!==null && i.qty<=3).length;
   const stats = [
-    {label:'Categories', value: categories.length, sub: categories.map(c=>c.name).slice(0,2).join(', ') + (categories.length>2?'…':''), color:'', icon:'layers'},
     {label:'Products (SKUs)', value: items.length, sub: lowCount+' low stock', color:'c-green', icon:'tag'},
     {label:'Total Quantity', value: fmtNum(totalQty), sub:'units in stock', color:'c-orange', icon:'box'},
     {label:'Total Value', value: '₹'+fmtNum(Math.round(totalValue)), sub:'at listed rate', color:'c-violet', icon:'rupee'},
@@ -608,26 +591,6 @@ function renderStats(){
   `).join('');
 }
 
-function renderTabs(){
-  const items = allItems();
-  const tabs = [{key:'ALL', label:'All stock', count: items.length}]
-    .concat(categories.map(c=>({key:c.name, label:c.name, count:c.items.length})));
-  binTabsTop.innerHTML = tabs.map(t=>`
-    <div class="nav-pill ${activeCategory===t.key?'active':''}" data-key="${encodeURIComponent(t.key)}">
-      ${escapeHtml(t.label)} <span class="n">${t.count}</span>
-    </div>
-  `).join('');
-  document.querySelectorAll('.nav-pill').forEach(el=>{
-    el.addEventListener('click', ()=>{
-      activeCategory = decodeURIComponent(el.getAttribute('data-key'));
-      document.getElementById('tableHeadLabel').textContent = activeCategory === 'ALL' ? 'All stock' : activeCategory;
-      renderTabs();
-      renderTable();
-    });
-  });
-  document.getElementById('tableHeadLabel').textContent = activeCategory === 'ALL' ? 'All stock' : activeCategory;
-}
-
 function attachControlEvents(){
   document.getElementById('searchInput').oninput = renderTable;
   document.getElementById('sortSelect').onchange = (e)=>{ sortState = e.target.value; renderTable(); };
@@ -639,10 +602,8 @@ function escapeHtml(str){
 
 function renderTable(){
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
-  const showCatCol = activeCategory === 'ALL';
-  document.getElementById('thCat').style.display = showCatCol ? '' : 'none';
 
-  let items = activeCategory === 'ALL' ? allItems() : (categories.find(c=>c.name===activeCategory)||{items:[]}).items;
+  let items = allItems();
   if(query) items = items.filter(i=>i.name.toLowerCase().includes(query));
 
   const [sortKey, dir] = sortState.split('-');
@@ -668,7 +629,6 @@ function renderTable(){
     return `
     <tr>
       <td class="name">${escapeHtml(i.name)}</td>
-      <td class="cat-pill" style="display:${showCatCol?'':'none'}">${escapeHtml(i.category)}</td>
       <td class="numcol" data-label="Qty"><span class="qty-pill ${low?'low':''}">${fmtNum(i.qty)}</span></td>
       <td class="numcol rateval" data-label="Rate">${fmtNum(i.rate)}</td>
       <td class="numcol rateval" data-label="GST Rate">${fmtNum(i.gstRate)}</td>
@@ -683,7 +643,7 @@ function populateProductList(){
   const items = allItems();
   productLookup = {};
   productListEl.innerHTML = items.map(i=>{
-    const label = `${i.name} — ${i.category}`;
+    const label = i.name;
     productLookup[label] = i.id;
     return `<option value="${escapeHtml(label)}"></option>`;
   }).join('');
@@ -759,7 +719,7 @@ function renderUsageLog(){
     <div class="usage-row">
       <div>
         <div class="u-name">${escapeHtml(u.name)}</div>
-        <div class="u-meta">${escapeHtml(u.category)} · ${new Date(u.time).toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})}</div>
+        <div class="u-meta">${new Date(u.time).toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})}</div>
       </div>
       <div class="u-right">
         <span class="usage-qty">−${fmtNum(u.qty)}</span>
