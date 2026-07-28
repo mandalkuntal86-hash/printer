@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 <style>
   :root{
     --bg:#EEF1F7;
@@ -342,6 +344,18 @@
 </div>
 
 <script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCyXe6LYRnsllz8hSuVXt3JPiDSvEE7DIY",
+  authDomain: "enquary-d674e.firebaseapp.com",
+  databaseURL: "https://enquary-d674e-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "enquary-d674e",
+  storageBucket: "enquary-d674e.firebasestorage.app",
+  messagingSenderId: "944541457815",
+  appId: "1:944541457815:web:258a3f8d12e0b5df0638d2"
+};
+firebase.initializeApp(firebaseConfig);
+const stockRef = firebase.database().ref('stock-data');
+
 let categories = [];
 let usageLog = [];
 let activeCategory = 'ALL';
@@ -391,8 +405,8 @@ fileInput.addEventListener('change', e=>{
 });
 
 clearHistoryBtn.addEventListener('click', async () => {
-  if(!confirm('Clear the saved stock data from this browser? This cannot be undone.')) return;
-  try{ await window.storage.delete('stock-data', false); }catch(err){ /* nothing saved */ }
+  if(!confirm('Clear the saved stock data from the cloud? This cannot be undone.')) return;
+  try{ await stockRef.remove(); }catch(err){ console.error('Could not clear stock data:', err); }
   categories = [];
   usageLog = [];
   activeCategory = 'ALL';
@@ -403,7 +417,7 @@ clearHistoryBtn.addEventListener('click', async () => {
   usageCard.style.display = 'none';
   badges.innerHTML = '';
   dzTitle.textContent = 'Drop your stock Excel file here';
-  dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved in this browser so it's still here next time you open this page.";
+  dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved to the cloud so it's available on any device.";
   dropzone.style.display = 'block';
   document.getElementById('brandName').textContent = 'Stock Viewer';
   document.getElementById('brandSub').textContent = 'Inventory · Stock Group Summary';
@@ -488,7 +502,7 @@ function parseWorkbook(workbook){
       if(qtyRaw===null || qtyRaw===undefined || isNaN(qty)) continue;
       const rate = colMap.rate!==undefined ? Number(row[colMap.rate]) : null;
       const gstRate = colMap.gstRate!==undefined ? Number(row[colMap.gstRate]) : null;
-      let value = colMap.value!==undefined ? Number(row[colMap.value]) : null;
+      let value = (gstRate!==null && !isNaN(gstRate)) ? qty*gstRate : (colMap.value!==undefined ? Number(row[colMap.value]) : null);
       if((value===null || isNaN(value)) && rate!==null && !isNaN(rate)) value = qty*rate;
       items.push({id: sheetName+'::'+nameStr, name:nameStr, qty, rate:(rate!==null && !isNaN(rate))?rate:null, gstRate:(gstRate!==null && !isNaN(gstRate))?gstRate:null, value:(value!==null && !isNaN(value))?value:null, category: sheetName});
     }
@@ -504,7 +518,7 @@ function fmtNum(n){
 
 async function saveAll(){
   try{
-    await window.storage.set('stock-data', JSON.stringify({fileName: currentFileName, categories, usageLog, savedAt: Date.now()}), false);
+    await stockRef.set({fileName: currentFileName, categories, usageLog, savedAt: Date.now()});
     setBadge(true);
   }catch(err){
     setBadge(false);
@@ -522,21 +536,19 @@ async function loadFromStorage(){
   dzTitle.textContent = 'Checking for saved stock…';
   dzSub.textContent = '';
   try{
-    const result = await window.storage.get('stock-data', false);
-    if(result && result.value){
-      const parsed = JSON.parse(result.value);
-      if(parsed.categories && parsed.categories.length){
-        categories = parsed.categories;
-        usageLog = parsed.usageLog || [];
-        currentFileName = parsed.fileName || 'Saved stock';
-        activeCategory = 'ALL';
-        renderAll(currentFileName, true);
-        return;
-      }
+    const snapshot = await stockRef.once('value');
+    const parsed = snapshot.val();
+    if(parsed && parsed.categories && parsed.categories.length){
+      categories = parsed.categories;
+      usageLog = parsed.usageLog || [];
+      currentFileName = parsed.fileName || 'Saved stock';
+      activeCategory = 'ALL';
+      renderAll(currentFileName, true);
+      return;
     }
-  }catch(err){ /* nothing saved yet */ }
+  }catch(err){ console.error('Could not load stock data:', err); }
   dzTitle.textContent = 'Drop your stock Excel file here';
-  dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved in this browser so it's still here next time you open this page.";
+  dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved to the cloud so it's available on any device.";
 }
 
 function renderAll(fileName, restored){
@@ -697,7 +709,7 @@ function handleUseProduct(){
   if(item.qty !== null && qtyUsed > item.qty){ showUseError(`Only ${fmtNum(item.qty)} in stock for "${item.name}".`); return; }
 
   const originalQty = item.qty || 0;
-  const unitRate = item.rate !== null ? item.rate : (item.value !== null && originalQty > 0 ? item.value / originalQty : null);
+  const unitRate = item.gstRate !== null ? item.gstRate : (item.rate !== null ? item.rate : (item.value !== null && originalQty > 0 ? item.value / originalQty : null));
   const valueDelta = unitRate !== null ? qtyUsed * unitRate : 0;
 
   item.qty = originalQty - qtyUsed;
