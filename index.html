@@ -521,15 +521,15 @@ async function saveAll(){
     await stockRef.set({fileName: currentFileName, categories, usageLog, savedAt: Date.now()});
     setBadge(true);
   }catch(err){
-    setBadge(false);
+    setBadge(false, err.message || err.code);
     console.error('Could not save stock data:', err);
   }
 }
 
-function setBadge(saved){
+function setBadge(saved, errorMsg){
   badges.innerHTML = saved
     ? `<span class="badge saved"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#6FE3A0" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>SAVED</span>`
-    : `<span class="badge unsaved">NOT SAVED</span>`;
+    : `<span class="badge unsaved" title="${errorMsg ? escapeHtml(errorMsg) : ''}">NOT SAVED${errorMsg ? ' — ' + escapeHtml(errorMsg) : ''}</span>`;
 }
 
 async function loadFromStorage(){
@@ -546,7 +546,12 @@ async function loadFromStorage(){
       renderAll(currentFileName, true);
       return;
     }
-  }catch(err){ console.error('Could not load stock data:', err); }
+  }catch(err){
+    console.error('Could not load stock data:', err);
+    dzSub.innerHTML = `<span style="color:var(--red)">Couldn't load saved data: ${escapeHtml(err.message || err.code || 'unknown error')}</span>`;
+    dzTitle.textContent = 'Drop your stock Excel file here';
+    return;
+  }
   dzTitle.textContent = 'Drop your stock Excel file here';
   dzSub.innerHTML = "Accepts .xlsx / .xls — each sheet is read as a stock category.<br>It's saved to the cloud so it's available on any device.";
 }
