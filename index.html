@@ -418,7 +418,7 @@
     <div class="usage-card" id="usageCard" style="display:none;">
       <div class="table-card-head" style="background:var(--orange-soft);">
         <span class="dot-icon" style="background:var(--orange);"></span>
-        <span style="color:#8A5A00;">Today's Activity</span>
+        <span style="color:#8A5A00;">Last Action</span>
       </div>
       <div id="usageList"></div>
     </div>
@@ -1136,7 +1136,7 @@ function renderUsageLog(){
   const combined = [
     ...usageLog.map(u=>({...u, kind:'OUT'})),
     ...stockLog.map(u=>({...u, kind:'IN'}))
-  ].sort((a,b)=> b.time - a.time);
+  ].sort((a,b)=> b.time - a.time).slice(0, 1);
 
   if(!combined.length){ usageCard.style.display = 'none'; usageList.innerHTML = ''; return; }
   usageCard.style.display = 'block';
