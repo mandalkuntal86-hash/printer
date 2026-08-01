@@ -385,6 +385,10 @@
           <label>Qty used</label>
           <input type="number" id="useQtyInput" min="1" step="1" value="1">
         </div>
+        <div class="use-field" id="useDateField" style="display:none;">
+          <label>Date &amp; time (admin)</label>
+          <input type="datetime-local" id="useDateInput">
+        </div>
         <button class="btn primary" id="confirmUseBtn">Add</button>
         <button class="btn" id="cancelUseBtn">Cancel</button>
       </div>
@@ -552,6 +556,8 @@ const useProductBtn = document.getElementById('useProductBtn');
 const usePanel = document.getElementById('usePanel');
 const useProductInput = document.getElementById('useProductInput');
 const useQtyInput = document.getElementById('useQtyInput');
+const useDateField = document.getElementById('useDateField');
+const useDateInput = document.getElementById('useDateInput');
 const confirmUseBtn = document.getElementById('confirmUseBtn');
 const cancelUseBtn = document.getElementById('cancelUseBtn');
 const useError = document.getElementById('useError');
@@ -619,6 +625,20 @@ function attemptLogin(){
 function updateAdminUI(){
   adminBadge.textContent = isAdmin ? `🔓 Admin (${ADMIN_USER}) · Logout` : '🔒 Admin Login';
   adminBadge.classList.toggle('on', isAdmin);
+  refreshUseDateField();
+}
+function toLocalDatetimeValue(d){
+  const pad = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function refreshUseDateField(){
+  useDateField.style.display = isAdmin ? 'flex' : 'none';
+  if(isAdmin && !useDateInput.value){
+    useDateInput.value = toLocalDatetimeValue(new Date());
+  }
+  if(!isAdmin){
+    useDateInput.value = '';
+  }
 }
 adminBadge.addEventListener('click', () => {
   if(isAdmin){
@@ -666,7 +686,7 @@ useProductBtn.addEventListener('click', () => {
   const opening = usePanel.style.display === 'none';
   usePanel.style.display = opening ? 'block' : 'none';
   useError.style.display = 'none';
-  if(opening){ populateProductList(); useProductInput.focus(); }
+  if(opening){ populateProductList(); useProductInput.focus(); refreshUseDateField(); }
 });
 cancelUseBtn.addEventListener('click', () => {
   usePanel.style.display = 'none';
@@ -1003,17 +1023,27 @@ function handleUseProduct(){
   const unitRate = item.gstRate !== null ? item.gstRate : (item.rate !== null ? item.rate : (item.value !== null && originalQty > 0 ? item.value / originalQty : null));
   const valueDelta = unitRate !== null ? qtyUsed * unitRate : 0;
 
+  let entryTime = Date.now();
+  if(isAdmin && useDateInput.value){
+    const parsed = new Date(useDateInput.value);
+    if(!isNaN(parsed.getTime())){
+      if(parsed.getTime() > Date.now()){ showUseError('Date & time cannot be in the future.'); return; }
+      entryTime = parsed.getTime();
+    }
+  }
+
   item.qty = originalQty - qtyUsed;
   if(item.value !== null) item.value = Math.max(0, item.value - valueDelta);
 
   usageLog.unshift({
     id: 'u' + Date.now() + Math.random().toString(36).slice(2,7),
     itemId: item.id, name: item.name, category: item.category,
-    qty: qtyUsed, valueDelta, time: Date.now()
+    qty: qtyUsed, valueDelta, time: entryTime
   });
 
   useProductInput.value = '';
   useQtyInput.value = '1';
+  refreshUseDateField();
   renderStats();
   renderTable();
   renderUsageLog();
@@ -1110,18 +1140,25 @@ function renderUsageLog(){
 
   if(!combined.length){ usageCard.style.display = 'none'; usageList.innerHTML = ''; return; }
   usageCard.style.display = 'block';
-  usageList.innerHTML = combined.map(u => `
+  usageList.innerHTML = combined.map(u => {
+    const d = new Date(u.time);
+    const isToday = d.toDateString() === new Date().toDateString();
+    const when = isToday
+      ? d.toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})
+      : d.toLocaleString('en-IN',{day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) + ' (backdated)';
+    return `
     <div class="usage-row">
       <div>
         <div class="u-name">${escapeHtml(u.name)}</div>
-        <div class="u-meta">${u.kind==='IN'?'Stock added':'Used'} · ${new Date(u.time).toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})}</div>
+        <div class="u-meta">${u.kind==='IN'?'Stock added':'Used'} · ${when}</div>
       </div>
       <div class="u-right">
         <span class="usage-qty ${u.kind==='IN'?'in':''}">${u.kind==='IN'?'+':'−'}${fmtNum(u.qty)}</span>
         <button class="undo-btn" data-id="${u.id}" data-kind="${u.kind}">Undo</button>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
   usageList.querySelectorAll('.undo-btn').forEach(btn=>{
     btn.addEventListener('click', ()=> requireAdmin(() => {
       if(btn.getAttribute('data-kind')==='IN') undoStockAdd(btn.getAttribute('data-id'));
