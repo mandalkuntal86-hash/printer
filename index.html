@@ -90,6 +90,7 @@
   .nav-pill .n{font-size:10.5px; background:rgba(255,255,255,0.1); padding:1px 6px; border-radius:20px;}
   .nav-pill.active{background:#fff; color:var(--navy); border-color:#fff;}
   .nav-pill.active .n{background:var(--purple-soft); color:var(--purple);}
+  .topbar-nav{margin-top:2px;}
 
   /* ===== Page ===== */
   .wrap{max-width:1080px; margin:0 auto; padding:26px 20px 80px;}
@@ -169,6 +170,94 @@
     cursor:pointer; padding:4px 6px;
   }
   .undo-btn:hover{text-decoration:underline;}
+  .usage-qty.in{color:#0F7A38; background:var(--green-soft);}
+
+  .btn.add-stock{border-color:#BEE6CC; color:#0F7A38;}
+  .btn.add-stock:hover{background:var(--green-soft); border-color:var(--green);}
+
+  /* ===== Ledger / Day-wise balance ===== */
+  .ledger-day{margin-bottom:16px;}
+  .ledger-day-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    padding:10px 18px; background:var(--surface-muted); border:1px solid var(--border); border-bottom:none;
+    border-radius:var(--radius) var(--radius) 0 0;
+  }
+  .ledger-day-head .d-date{font-weight:700; font-size:13.5px;}
+  .ledger-day-head .d-meta{font-size:11.5px; color:var(--text-muted); display:flex; gap:14px; flex-wrap:wrap;}
+  .ledger-day-head .d-meta b{color:var(--ink);}
+  .ledger-table-wrap{background:var(--surface); border:1px solid var(--border); border-radius:0 0 var(--radius) var(--radius); box-shadow:var(--shadow); overflow:hidden;}
+  table.ledger{width:100%; border-collapse:collapse;}
+  table.ledger thead th{
+    text-align:right; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; font-weight:700;
+    color:var(--text-muted); padding:10px 16px; background:var(--surface-muted); border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  table.ledger thead th:first-child{text-align:left;}
+  table.ledger td{padding:11px 16px; font-size:13px; text-align:right; border-bottom:1px solid var(--border); vertical-align:middle;}
+  table.ledger tr:last-child td{border-bottom:none;}
+  table.ledger td:first-child{text-align:left; font-weight:600;}
+  table.ledger td.bal{font-family:'Lora',Georgia,serif; font-weight:700; color:var(--purple);}
+  table.ledger td.in-col{color:#0F7A38;}
+  table.ledger td.out-col{color:#C0392B;}
+  .ledger-empty{text-align:center; padding:40px 20px; color:var(--text-muted); font-size:13.5px;}
+  .ledger-controls{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; align-items:flex-end;}
+  .ledger-summary{
+    display:flex; gap:14px; flex-wrap:wrap; background:var(--navy); color:#fff; border-radius:var(--radius);
+    padding:14px 18px; margin-bottom:16px; box-shadow:var(--shadow);
+  }
+  .ledger-summary .s-item{display:flex; flex-direction:column; gap:2px;}
+  .ledger-summary .s-label{font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:#9AA6C8;}
+  .ledger-summary .s-value{font-family:'Lora',Georgia,serif; font-weight:700; font-size:17px;}
+  .ledger-summary .s-value.in{color:#6FE3A0;}
+  .ledger-summary .s-value.out{color:#F3A6A6;}
+  table.ledger tr.ledger-total td{
+    font-weight:700; background:var(--surface-muted); border-top:1.5px solid var(--border);
+  }
+  .day-print-btn{
+    font-size:11px; font-weight:700; color:var(--purple); background:var(--surface); border:1px solid var(--border);
+    padding:4px 10px; border-radius:7px; cursor:pointer;
+  }
+  .day-print-btn:hover{border-color:var(--purple);}
+  #printMeta{display:none;}
+
+  /* ===== Admin login ===== */
+  .admin-badge{
+    display:inline-flex; align-items:center; font-size:11.5px; font-weight:600;
+    padding:7px 12px; border-radius:8px; cursor:pointer; background:rgba(255,255,255,0.08); color:#DDE2F2;
+    border:1px solid rgba(255,255,255,0.14); transition:.15s ease;
+  }
+  .admin-badge:hover{background:rgba(255,255,255,0.14); color:#fff;}
+  .admin-badge.on{background:rgba(22,163,74,0.18); color:#6FE3A0; border-color:transparent;}
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(22,33,62,0.55); display:none;
+    align-items:center; justify-content:center; z-index:1000; padding:20px;
+  }
+  .modal-box{background:var(--surface); border-radius:var(--radius); padding:24px; width:100%; max-width:340px; box-shadow:0 10px 40px rgba(0,0,0,0.25);}
+  .modal-box h3{margin:0 0 4px; font-size:16px;}
+  .modal-box .sub{font-size:12.5px; color:var(--text-muted); margin:0 0 18px;}
+  .modal-box .use-field{margin-bottom:12px; display:flex; flex-direction:column; gap:5px;}
+  .modal-box .use-field label{font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em;}
+  .modal-box .use-field input{
+    width:100%; background:var(--surface-muted); border:1px solid var(--border); border-radius:8px;
+    padding:9px 12px; font-size:14px; font-family:'Inter',sans-serif; outline:none; transition:.15s ease;
+  }
+  .modal-box .use-field input:focus{border-color:var(--purple);}
+  .modal-box .modal-actions{display:flex; gap:8px; margin-top:14px;}
+
+  @media print{
+    body.print-ledger-only *{visibility:hidden;}
+    body.print-ledger-only #ledgerPage, body.print-ledger-only #ledgerPage *{visibility:visible;}
+    body.print-ledger-only #ledgerPage{position:absolute; left:0; top:0; width:100%; padding:0; margin:0; display:block !important;}
+    body.print-ledger-only .ledger-controls,
+    body.print-ledger-only .day-print-btn,
+    body.print-ledger-only #ledgerSummary,
+    body.print-ledger-only .page-head .sub{display:none !important;}
+    body.print-ledger-only #printMeta{display:block !important; font-size:11px; color:#555; margin-bottom:14px;}
+    body.print-ledger-only .ledger-day{page-break-inside:avoid; margin-bottom:18px;}
+    body.print-ledger-only .ledger-day-head{background:#fff !important; border:1px solid #ccc; border-bottom:none;}
+    body.print-ledger-only table.ledger th,
+    body.print-ledger-only table.ledger td{color:#000 !important;}
+    body.print-ledger-only .ledger-table-wrap{box-shadow:none; border:1px solid #ccc;}
+  }
 
   /* ===== Controls ===== */
   .controls{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; align-items:center;}
@@ -247,9 +336,14 @@
       </div>
       <div class="badges" id="badges"></div>
       <div class="topbar-actions" id="headerActions" style="display:none;">
+        <span class="admin-badge" id="adminBadge">🔒 Admin Login</span>
         <button class="btn on-dark" id="loadAnotherBtn">Load another file</button>
         <button class="btn on-dark" id="clearHistoryBtn" style="color:#F3A6A6;">Clear history</button>
       </div>
+    </div>
+    <div class="topbar-nav" id="topbarNav" style="display:none;">
+      <button class="nav-pill active" data-page="overview">Overview</button>
+      <button class="nav-pill" data-page="ledger">Day-wise Ledger &amp; Balance</button>
     </div>
   </div>
 </div>
@@ -274,7 +368,10 @@
         <h1 id="pageTitle">Overview</h1>
         <div class="sub" id="pageSub"></div>
       </div>
-      <button class="btn primary" id="useProductBtn">− Use Product</button>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn add-stock" id="addStockBtn">+ Add Stock</button>
+        <button class="btn primary" id="useProductBtn">− Use Product</button>
+      </div>
     </div>
 
     <div class="use-panel" id="usePanel" style="display:none;">
@@ -294,51 +391,122 @@
       <div class="use-error" id="useError" style="display:none;"></div>
     </div>
 
+    <div class="use-panel" id="addStockPanel" style="display:none;">
+      <div class="use-panel-row">
+        <div class="use-field grow">
+          <label>Product</label>
+          <input type="text" id="addProductInput" list="productList" placeholder="Start typing a product name…" autocomplete="off">
+        </div>
+        <div class="use-field qty">
+          <label>Qty added</label>
+          <input type="number" id="addQtyInput" min="1" step="1" value="1">
+        </div>
+        <div class="use-field qty">
+          <label>Rate (₹, optional)</label>
+          <input type="number" id="addRateInput" min="0" step="0.01" placeholder="last rate">
+        </div>
+        <button class="btn add-stock" id="confirmAddBtn">Add Stock</button>
+        <button class="btn" id="cancelAddBtn">Cancel</button>
+      </div>
+      <div class="use-error" id="addError" style="display:none;"></div>
+    </div>
+
     <div class="usage-card" id="usageCard" style="display:none;">
       <div class="table-card-head" style="background:var(--orange-soft);">
         <span class="dot-icon" style="background:var(--orange);"></span>
-        <span style="color:#8A5A00;">Today's Usage</span>
+        <span style="color:#8A5A00;">Today's Activity</span>
       </div>
       <div id="usageList"></div>
     </div>
 
-    <div class="stats" id="stats"></div>
+    <div id="overviewPage">
+      <div class="stats" id="stats"></div>
 
-    <div class="controls">
-      <div class="search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#707788" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-        <input type="text" id="searchInput" placeholder="Search products by name…">
+      <div class="controls">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#707788" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="Search products by name…">
+        </div>
+        <select id="sortSelect">
+          <option value="name-asc">Name (A–Z)</option>
+          <option value="name-desc">Name (Z–A)</option>
+          <option value="qty-desc">Quantity (high–low)</option>
+          <option value="qty-asc">Quantity (low–high)</option>
+          <option value="value-desc">Value (high–low)</option>
+          <option value="value-asc">Value (low–high)</option>
+        </select>
       </div>
-      <select id="sortSelect">
-        <option value="name-asc">Name (A–Z)</option>
-        <option value="name-desc">Name (Z–A)</option>
-        <option value="qty-desc">Quantity (high–low)</option>
-        <option value="qty-asc">Quantity (low–high)</option>
-        <option value="value-desc">Value (high–low)</option>
-        <option value="value-asc">Value (low–high)</option>
-      </select>
-    </div>
-    <div class="result-count" id="resultCount"></div>
+      <div class="result-count" id="resultCount"></div>
 
-    <div class="table-card">
-      <div class="table-card-head"><span class="dot-icon"></span><span>All stock</span></div>
-      <table id="stockTable">
-        <thead>
-          <tr>
-            <th id="thName">Product</th>
-            <th class="numcol">Qty</th>
-            <th class="numcol">Rate (₹)</th>
-            <th class="numcol">GST Rate (₹)</th>
-            <th class="numcol">Value (₹)</th>
-          </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-      </table>
-      <div class="empty-state" id="emptyState" style="display:none;">No products match your search.</div>
+      <div class="table-card">
+        <div class="table-card-head"><span class="dot-icon"></span><span>All stock</span></div>
+        <table id="stockTable">
+          <thead>
+            <tr>
+              <th id="thName">Product</th>
+              <th class="numcol">Qty</th>
+              <th class="numcol">Rate (₹)</th>
+              <th class="numcol">GST Rate (₹)</th>
+              <th class="numcol">Value (₹)</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyState" style="display:none;">No products match your search.</div>
+      </div>
+      <footer class="note">Low-stock items (qty ≤ 3) are highlighted in red · Saved to the cloud · Use "Clear history" to remove it</footer>
     </div>
-    <footer class="note">Low-stock items (qty ≤ 3) are highlighted in red · Saved locally in this browser · Use "Clear history" to remove it</footer>
+
+    <div id="ledgerPage" style="display:none;">
+      <div class="page-head" style="margin-bottom:14px;">
+        <div>
+          <h1 style="font-size:16px;">Day-wise Product Use, Rate &amp; Balance</h1>
+          <div class="sub">Opening balance, IN (stock added), OUT (used), rate and closing balance for every product, grouped by day.</div>
+        </div>
+      </div>
+      <div class="ledger-controls">
+        <div class="search-box">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#707788" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" id="ledgerSearch" placeholder="Filter by product name…">
+        </div>
+        <div class="use-field">
+          <label style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">From</label>
+          <input type="date" id="ledgerFromDate" style="background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 10px; font-family:'Inter',sans-serif; font-size:13px; box-shadow:var(--shadow);">
+        </div>
+        <div class="use-field">
+          <label style="font-size:10px; font-weight:600; color:var(--text-muted); text-transform:uppercase;">To</label>
+          <input type="date" id="ledgerToDate" style="background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 10px; font-family:'Inter',sans-serif; font-size:13px; box-shadow:var(--shadow);">
+        </div>
+        <button class="btn" id="ledgerClearDates">Clear dates</button>
+        <button class="btn primary" id="ledgerPrintBtn">🖨 Print Report</button>
+      </div>
+      <div id="ledgerSummary" style="display:none;"></div>
+      <div id="printMeta" style="display:none;"></div>
+      <div id="ledgerContainer"></div>
+    </div>
+
   </div>
 
+</div>
+
+<div class="modal-overlay" id="loginModal">
+  <div class="modal-box">
+    <h3>Admin Login</h3>
+    <p class="sub">This action is restricted. Please sign in as an admin to continue.</p>
+    <div class="use-field">
+      <label>Username</label>
+      <input type="text" id="loginUser" autocomplete="username">
+    </div>
+    <div class="use-field">
+      <label>Password</label>
+      <input type="password" id="loginPass" autocomplete="current-password">
+    </div>
+    <div class="use-error" id="loginError" style="display:none;"></div>
+    <div class="modal-actions">
+      <button class="btn primary" id="loginSubmitBtn">Login</button>
+      <button class="btn" id="loginCancelBtn">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -356,9 +524,19 @@ const stockRef = firebase.database().ref('stock-data');
 
 let categories = [];
 let usageLog = [];
+let stockLog = [];
 let sortState = 'name-asc';
 let currentFileName = '';
 let productLookup = {};
+let currentPage = 'overview';
+let ledgerSearchQuery = '';
+let ledgerFromDate = '';
+let ledgerToDate = '';
+
+const ADMIN_USER = 'mandalkuntal';
+const ADMIN_PASS = 'Buku@2016';
+let isAdmin = false;
+let pendingAdminAction = null;
 
 const dropzone = document.getElementById('dropzone');
 const fileInput = document.getElementById('fileInput');
@@ -380,10 +558,83 @@ const useError = document.getElementById('useError');
 const usageCard = document.getElementById('usageCard');
 const usageList = document.getElementById('usageList');
 const productListEl = document.getElementById('productList');
+const addStockBtn = document.getElementById('addStockBtn');
+const addStockPanel = document.getElementById('addStockPanel');
+const addProductInput = document.getElementById('addProductInput');
+const addQtyInput = document.getElementById('addQtyInput');
+const addRateInput = document.getElementById('addRateInput');
+const confirmAddBtn = document.getElementById('confirmAddBtn');
+const cancelAddBtn = document.getElementById('cancelAddBtn');
+const addError = document.getElementById('addError');
+const topbarNav = document.getElementById('topbarNav');
+const overviewPage = document.getElementById('overviewPage');
+const ledgerPage = document.getElementById('ledgerPage');
+const ledgerContainer = document.getElementById('ledgerContainer');
+const ledgerSearchInput = document.getElementById('ledgerSearch');
+const ledgerFromDateInput = document.getElementById('ledgerFromDate');
+const ledgerToDateInput = document.getElementById('ledgerToDate');
+const ledgerClearDates = document.getElementById('ledgerClearDates');
+const ledgerSummary = document.getElementById('ledgerSummary');
+const ledgerPrintBtn = document.getElementById('ledgerPrintBtn');
+const printMeta = document.getElementById('printMeta');
+const adminBadge = document.getElementById('adminBadge');
+const loginModal = document.getElementById('loginModal');
+const loginUser = document.getElementById('loginUser');
+const loginPass = document.getElementById('loginPass');
+const loginError = document.getElementById('loginError');
+const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+const loginCancelBtn = document.getElementById('loginCancelBtn');
 
 browseBtn.addEventListener('click', () => fileInput.click());
+
+function requireAdmin(action){
+  if(isAdmin){ action(); return; }
+  pendingAdminAction = action;
+  openLoginModal();
+}
+function openLoginModal(){
+  loginError.style.display = 'none';
+  loginUser.value = '';
+  loginPass.value = '';
+  loginModal.style.display = 'flex';
+  setTimeout(()=> loginUser.focus(), 50);
+}
+function closeLoginModal(){
+  loginModal.style.display = 'none';
+  pendingAdminAction = null;
+}
+function attemptLogin(){
+  if(loginUser.value.trim() === ADMIN_USER && loginPass.value === ADMIN_PASS){
+    isAdmin = true;
+    updateAdminUI();
+    loginModal.style.display = 'none';
+    const action = pendingAdminAction;
+    pendingAdminAction = null;
+    if(action) action();
+  } else {
+    loginError.textContent = 'Incorrect username or password.';
+    loginError.style.display = 'block';
+  }
+}
+function updateAdminUI(){
+  adminBadge.textContent = isAdmin ? `🔓 Admin (${ADMIN_USER}) · Logout` : '🔒 Admin Login';
+  adminBadge.classList.toggle('on', isAdmin);
+}
+adminBadge.addEventListener('click', () => {
+  if(isAdmin){
+    if(confirm('Log out of admin mode?')){ isAdmin = false; updateAdminUI(); }
+  } else {
+    pendingAdminAction = null;
+    openLoginModal();
+  }
+});
+loginSubmitBtn.addEventListener('click', attemptLogin);
+loginCancelBtn.addEventListener('click', closeLoginModal);
+loginModal.addEventListener('click', e => { if(e.target === loginModal) closeLoginModal(); });
+loginUser.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); attemptLogin(); }});
+loginPass.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); attemptLogin(); }});
 dropzone.addEventListener('click', (e) => { if(e.target === browseBtn) return; fileInput.click(); });
-loadAnotherBtn.addEventListener('click', () => fileInput.click());
+loadAnotherBtn.addEventListener('click', () => requireAdmin(() => fileInput.click()));
 
 ['dragenter','dragover'].forEach(evt=>{
   dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
@@ -400,7 +651,7 @@ fileInput.addEventListener('change', e=>{
   if(file) handleFile(file);
 });
 
-clearHistoryBtn.addEventListener('click', async () => {
+clearHistoryBtn.addEventListener('click', () => requireAdmin(async () => {
   if(!confirm('Clear the saved stock data from the cloud? This cannot be undone.')) return;
   try{ await stockRef.remove(); }catch(err){ console.error('Could not clear stock data:', err); }
   // Hard reload instead of just resetting in-memory variables. This app keeps everything
@@ -409,7 +660,7 @@ clearHistoryBtn.addEventListener('click', async () => {
   // the moment it does anything that calls saveAll(). A full reload guarantees this tab
   // can never re-push stale data after a clear.
   location.reload();
-});
+}));
 
 useProductBtn.addEventListener('click', () => {
   const opening = usePanel.style.display === 'none';
@@ -425,6 +676,69 @@ confirmUseBtn.addEventListener('click', handleUseProduct);
 useProductInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); handleUseProduct(); }});
 useQtyInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); handleUseProduct(); }});
 
+addStockBtn.addEventListener('click', () => requireAdmin(() => {
+  const opening = addStockPanel.style.display === 'none';
+  addStockPanel.style.display = opening ? 'block' : 'none';
+  usePanel.style.display = 'none';
+  addError.style.display = 'none';
+  if(opening){ populateProductList(); addProductInput.focus(); }
+}));
+cancelAddBtn.addEventListener('click', () => {
+  addStockPanel.style.display = 'none';
+  addError.style.display = 'none';
+});
+confirmAddBtn.addEventListener('click', handleAddStock);
+addProductInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); handleAddStock(); }});
+addQtyInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); handleAddStock(); }});
+addRateInput.addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); handleAddStock(); }});
+
+topbarNav.addEventListener('click', e => {
+  const btn = e.target.closest('.nav-pill');
+  if(!btn) return;
+  setPage(btn.getAttribute('data-page'));
+});
+
+function setPage(page){
+  currentPage = page;
+  topbarNav.querySelectorAll('.nav-pill').forEach(p => p.classList.toggle('active', p.getAttribute('data-page')===page));
+  overviewPage.style.display = page==='overview' ? 'block' : 'none';
+  ledgerPage.style.display = page==='ledger' ? 'block' : 'none';
+  if(page==='ledger') renderLedger();
+}
+
+ledgerSearchInput.addEventListener('input', e => { ledgerSearchQuery = e.target.value.trim().toLowerCase(); renderLedger(); });
+ledgerFromDateInput.addEventListener('change', e => { ledgerFromDate = e.target.value; renderLedger(); });
+ledgerToDateInput.addEventListener('change', e => { ledgerToDate = e.target.value; renderLedger(); });
+ledgerClearDates.addEventListener('click', () => {
+  ledgerFromDate = ''; ledgerToDate = '';
+  ledgerFromDateInput.value = ''; ledgerToDateInput.value = '';
+  renderLedger();
+});
+
+ledgerPrintBtn.addEventListener('click', () => printLedger());
+
+window.addEventListener('afterprint', () => {
+  document.body.classList.remove('print-ledger-only');
+  document.querySelectorAll('.ledger-day').forEach(el=>{
+    if(el.dataset.hiddenForPrint === '1'){ el.style.display = ''; delete el.dataset.hiddenForPrint; }
+  });
+});
+
+function printLedger(onlyDayKey){
+  const rangeText = (ledgerFromDate || ledgerToDate)
+    ? `Date range: ${ledgerFromDate || 'start'} to ${ledgerToDate || 'today'}`
+    : 'All dates';
+  printMeta.innerHTML = `Stock Usage &amp; Balance Report — ${escapeHtml(currentFileName || '')}<br>${escapeHtml(rangeText)} · Printed ${new Date().toLocaleString('en-IN')}`;
+
+  if(onlyDayKey){
+    document.querySelectorAll('.ledger-day').forEach(el=>{
+      if(el.getAttribute('data-day') !== onlyDayKey){ el.style.display = 'none'; el.dataset.hiddenForPrint = '1'; }
+    });
+  }
+  document.body.classList.add('print-ledger-only');
+  window.print();
+}
+
 function handleFile(file){
   const reader = new FileReader();
   reader.onload = (e)=>{
@@ -437,6 +751,7 @@ function handleFile(file){
         return;
       }
       usageLog = [];
+      stockLog = [];
       sortState = 'name-asc';
       currentFileName = file.name;
       document.getElementById('sortSelect').value = sortState;
@@ -491,7 +806,7 @@ function parseWorkbook(workbook){
       const gstRate = colMap.gstRate!==undefined ? Number(row[colMap.gstRate]) : null;
       let value = (gstRate!==null && !isNaN(gstRate)) ? qty*gstRate : (colMap.value!==undefined ? Number(row[colMap.value]) : null);
       if((value===null || isNaN(value)) && rate!==null && !isNaN(rate)) value = qty*rate;
-      items.push({id: sheetName+'::'+nameStr, name:nameStr, qty, rate:(rate!==null && !isNaN(rate))?rate:null, gstRate:(gstRate!==null && !isNaN(gstRate))?gstRate:null, value:(value!==null && !isNaN(value))?value:null, category: sheetName});
+      items.push({id: sheetName+'::'+nameStr, name:nameStr, qty, openingQty: qty, rate:(rate!==null && !isNaN(rate))?rate:null, gstRate:(gstRate!==null && !isNaN(gstRate))?gstRate:null, value:(value!==null && !isNaN(value))?value:null, category: sheetName});
     }
     if(items.length) cats.push({name: sheetName, items});
   });
@@ -505,7 +820,7 @@ function fmtNum(n){
 
 async function saveAll(){
   try{
-    await stockRef.set({fileName: currentFileName, categories, usageLog, savedAt: Date.now()});
+    await stockRef.set({fileName: currentFileName, categories, usageLog, stockLog, savedAt: Date.now()});
     setBadge(true);
   }catch(err){
     setBadge(false, err.message || err.code);
@@ -528,7 +843,16 @@ async function loadFromStorage(){
     if(parsed && parsed.categories && parsed.categories.length){
       categories = parsed.categories;
       usageLog = parsed.usageLog || [];
+      stockLog = parsed.stockLog || [];
       currentFileName = parsed.fileName || 'Saved stock';
+      // Migration: older saved data has no openingQty snapshot. Reconstruct it by
+      // walking the logs backwards from the current balance so day-wise history stays correct.
+      allItems().forEach(item=>{
+        if(item.openingQty !== undefined && item.openingQty !== null) return;
+        const outQty = usageLog.filter(u=>u.itemId===item.id).reduce((s,u)=>s+(u.qty||0),0);
+        const inQty = stockLog.filter(u=>u.itemId===item.id).reduce((s,u)=>s+(u.qty||0),0);
+        item.openingQty = (item.qty || 0) + outQty - inQty;
+      });
       renderAll(currentFileName, true);
       return;
     }
@@ -546,6 +870,8 @@ function renderAll(fileName, restored){
   dropzone.style.display = 'none';
   content.style.display = 'block';
   headerActions.style.display = 'flex';
+  topbarNav.style.display = 'flex';
+  setPage('overview');
   document.getElementById('brandName').textContent = 'Current Stock';
   document.getElementById('brandSub').textContent = fileName;
   setBadge(true);
@@ -692,6 +1018,69 @@ function handleUseProduct(){
   renderTable();
   renderUsageLog();
   populateProductList();
+  if(currentPage==='ledger') renderLedger();
+  saveAll();
+}
+
+function handleAddStock(){
+  addError.style.display = 'none';
+  const inputVal = addProductInput.value.trim();
+  const qtyAdded = Number(addQtyInput.value);
+
+  if(!inputVal){ addError.textContent='Type or pick a product from the list.'; addError.style.display='block'; return; }
+
+  let item = null;
+  const lookupId = productLookup[inputVal];
+  if(lookupId) item = findItemById(lookupId);
+  if(!item){
+    const matches = allItems().filter(i=>i.name.toLowerCase() === inputVal.toLowerCase());
+    if(matches.length === 1) item = matches[0];
+  }
+  if(!item){ addError.textContent='Product not found — please select one from the suggestions.'; addError.style.display='block'; return; }
+
+  if(!qtyAdded || qtyAdded <= 0 || !Number.isFinite(qtyAdded)){ addError.textContent='Enter a quantity greater than 0.'; addError.style.display='block'; return; }
+
+  const rateInput = Number(addRateInput.value);
+  const unitRate = (addRateInput.value.trim() !== '' && !isNaN(rateInput) && rateInput >= 0)
+    ? rateInput
+    : (item.gstRate !== null ? item.gstRate : (item.rate !== null ? item.rate : null));
+  const valueDelta = unitRate !== null ? qtyAdded * unitRate : 0;
+
+  item.qty = (item.qty || 0) + qtyAdded;
+  if(unitRate !== null) item.value = (item.value || 0) + valueDelta;
+
+  stockLog.unshift({
+    id: 's' + Date.now() + Math.random().toString(36).slice(2,7),
+    itemId: item.id, name: item.name, category: item.category,
+    qty: qtyAdded, valueDelta, rate: unitRate, time: Date.now()
+  });
+
+  addProductInput.value = '';
+  addQtyInput.value = '1';
+  addRateInput.value = '';
+  renderStats();
+  renderTable();
+  renderUsageLog();
+  populateProductList();
+  if(currentPage==='ledger') renderLedger();
+  saveAll();
+}
+
+function undoStockAdd(logId){
+  const idx = stockLog.findIndex(u => u.id === logId);
+  if(idx === -1) return;
+  const entry = stockLog[idx];
+  const item = findItemById(entry.itemId);
+  if(item){
+    item.qty = (item.qty || 0) - entry.qty;
+    if(item.value !== null) item.value = Math.max(0, item.value - entry.valueDelta);
+  }
+  stockLog.splice(idx, 1);
+  renderStats();
+  renderTable();
+  renderUsageLog();
+  populateProductList();
+  if(currentPage==='ledger') renderLedger();
   saveAll();
 }
 
@@ -709,29 +1098,177 @@ function undoUsage(logId){
   renderTable();
   renderUsageLog();
   populateProductList();
+  if(currentPage==='ledger') renderLedger();
   saveAll();
 }
 
 function renderUsageLog(){
-  if(!usageLog.length){ usageCard.style.display = 'none'; usageList.innerHTML = ''; return; }
+  const combined = [
+    ...usageLog.map(u=>({...u, kind:'OUT'})),
+    ...stockLog.map(u=>({...u, kind:'IN'}))
+  ].sort((a,b)=> b.time - a.time);
+
+  if(!combined.length){ usageCard.style.display = 'none'; usageList.innerHTML = ''; return; }
   usageCard.style.display = 'block';
-  usageList.innerHTML = usageLog.map(u => `
+  usageList.innerHTML = combined.map(u => `
     <div class="usage-row">
       <div>
         <div class="u-name">${escapeHtml(u.name)}</div>
-        <div class="u-meta">${new Date(u.time).toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})}</div>
+        <div class="u-meta">${u.kind==='IN'?'Stock added':'Used'} · ${new Date(u.time).toLocaleTimeString('en-IN',{hour:'2-digit', minute:'2-digit'})}</div>
       </div>
       <div class="u-right">
-        <span class="usage-qty">−${fmtNum(u.qty)}</span>
-        <button class="undo-btn" data-id="${u.id}">Undo</button>
+        <span class="usage-qty ${u.kind==='IN'?'in':''}">${u.kind==='IN'?'+':'−'}${fmtNum(u.qty)}</span>
+        <button class="undo-btn" data-id="${u.id}" data-kind="${u.kind}">Undo</button>
       </div>
     </div>
   `).join('');
   usageList.querySelectorAll('.undo-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=> undoUsage(btn.getAttribute('data-id')));
+    btn.addEventListener('click', ()=> requireAdmin(() => {
+      if(btn.getAttribute('data-kind')==='IN') undoStockAdd(btn.getAttribute('data-id'));
+      else undoUsage(btn.getAttribute('data-id'));
+    }));
   });
 }
 
+function renderLedger(){
+  const movements = [
+    ...usageLog.map(u=>({...u, type:'OUT'})),
+    ...stockLog.map(u=>({...u, type:'IN'}))
+  ];
+
+  if(!movements.length){
+    ledgerSummary.style.display = 'none';
+    ledgerContainer.innerHTML = `<div class="ledger-table-wrap"><div class="ledger-empty">No stock movements yet. Use "Add Stock" or "Use Product" to start building the day-wise ledger.</div></div>`;
+    return;
+  }
+
+  movements.sort((a,b)=>a.time-b.time);
+
+  const runningBal = {};
+  allItems().forEach(i=>{
+    runningBal[i.id] = (i.openingQty!==undefined && i.openingQty!==null) ? i.openingQty : (i.qty||0);
+  });
+
+  const dayGroups = {};
+  const dayOrder = [];
+
+  movements.forEach(m=>{
+    const d = new Date(m.time);
+    const dateKey = d.toLocaleDateString('en-CA');
+    const dateLabel = d.toLocaleDateString('en-IN', {weekday:'short', day:'2-digit', month:'short', year:'numeric'});
+    if(!dayGroups[dateKey]){ dayGroups[dateKey] = {label: dateLabel, items:{}}; dayOrder.push(dateKey); }
+    const grp = dayGroups[dateKey].items;
+    if(runningBal[m.itemId] === undefined) runningBal[m.itemId] = 0;
+    if(!grp[m.itemId]){
+      grp[m.itemId] = { name: m.name, category: m.category, opening: runningBal[m.itemId], in:0, out:0, rate:null, valueIn:0, valueOut:0 };
+    }
+    const rec = grp[m.itemId];
+    if(m.type==='IN'){
+      rec.in += m.qty;
+      rec.valueIn += (m.valueDelta||0);
+      runningBal[m.itemId] += m.qty;
+    } else {
+      rec.out += m.qty;
+      rec.valueOut += (m.valueDelta||0);
+      runningBal[m.itemId] -= m.qty;
+    }
+    const unitRate = m.qty ? (m.valueDelta||0)/m.qty : (m.rate!==undefined ? m.rate : null);
+    if(unitRate) rec.rate = unitRate;
+    rec.closing = runningBal[m.itemId];
+  });
+
+  // Date-range filter (inclusive, based on local YYYY-MM-DD day keys)
+  let visibleDayKeys = dayOrder.filter(dateKey=>{
+    if(ledgerFromDate && dateKey < ledgerFromDate) return false;
+    if(ledgerToDate && dateKey > ledgerToDate) return false;
+    return true;
+  });
+  visibleDayKeys.sort().reverse();
+
+  const query = ledgerSearchQuery;
+  let html = '';
+  let grandIn=0, grandOut=0, grandValueIn=0, grandValueOut=0, grandDays=0;
+
+  visibleDayKeys.forEach(dateKey=>{
+    const grp = dayGroups[dateKey];
+    let entries = Object.entries(grp.items);
+    if(query) entries = entries.filter(([id,rec])=>rec.name.toLowerCase().includes(query));
+    if(!entries.length) return;
+    entries.sort((a,b)=>a[1].name.localeCompare(b[1].name));
+    grandDays++;
+
+    let dayValueOut=0, dayValueIn=0, dayQtyOut=0, dayQtyIn=0, dayValueTotal=0;
+    const rows = entries.map(([id,rec])=>{
+      const rowValue = rec.valueOut + rec.valueIn;
+      dayValueOut += rec.valueOut; dayValueIn += rec.valueIn; dayQtyOut += rec.out; dayQtyIn += rec.in; dayValueTotal += rowValue;
+      return `<tr>
+        <td>${escapeHtml(rec.name)}</td>
+        <td>${fmtNum(rec.opening)}</td>
+        <td class="in-col">${rec.in ? '+'+fmtNum(rec.in) : '—'}</td>
+        <td class="out-col">${rec.out ? '−'+fmtNum(rec.out) : '—'}</td>
+        <td>${rec.rate!==null ? '₹'+fmtNum(rec.rate) : '—'}</td>
+        <td>${rowValue ? '₹'+fmtNum(Math.round(rowValue)) : '—'}</td>
+        <td class="bal">${fmtNum(rec.closing)}</td>
+      </tr>`;
+    }).join('');
+
+    grandIn += dayQtyIn; grandOut += dayQtyOut; grandValueIn += dayValueIn; grandValueOut += dayValueOut;
+
+    const totalRow = `<tr class="ledger-total">
+        <td>Day Total</td>
+        <td>—</td>
+        <td class="in-col">${dayQtyIn?'+'+fmtNum(dayQtyIn):'—'}</td>
+        <td class="out-col">${dayQtyOut?'−'+fmtNum(dayQtyOut):'—'}</td>
+        <td>—</td>
+        <td>₹${fmtNum(Math.round(dayValueTotal))}</td>
+        <td>—</td>
+      </tr>`;
+
+    html += `
+      <div class="ledger-day" data-day="${dateKey}">
+        <div class="ledger-day-head">
+          <div class="d-date">${grp.label}</div>
+          <div class="d-meta">
+            <span>IN: <b>${fmtNum(dayQtyIn)}</b> (₹${fmtNum(Math.round(dayValueIn))})</span>
+            <span>OUT: <b>${fmtNum(dayQtyOut)}</b> (₹${fmtNum(Math.round(dayValueOut))})</span>
+            <span>Day Value: <b>₹${fmtNum(Math.round(dayValueTotal))}</b></span>
+            <button class="day-print-btn" data-print-day="${dateKey}">🖨 Print this day</button>
+          </div>
+        </div>
+        <div class="ledger-table-wrap">
+          <table class="ledger">
+            <thead><tr><th>Product</th><th>Opening Bal.</th><th>In</th><th>Out</th><th>Rate (₹)</th><th>Value (₹)</th><th>Closing Bal.</th></tr></thead>
+            <tbody>${rows}${totalRow}</tbody>
+          </table>
+        </div>
+      </div>`;
+  });
+
+  if(!html){
+    ledgerSummary.style.display = 'none';
+    const reason = query ? `No products match "${escapeHtml(query)}"` : 'No stock movements in this date range';
+    ledgerContainer.innerHTML = `<div class="ledger-table-wrap"><div class="ledger-empty">${reason}.</div></div>`;
+    return;
+  }
+
+  ledgerSummary.style.display = 'flex';
+  ledgerSummary.className = 'ledger-summary';
+  ledgerSummary.innerHTML = `
+    <div class="s-item"><div class="s-label">Days shown</div><div class="s-value">${grandDays}</div></div>
+    <div class="s-item"><div class="s-label">Total Qty In</div><div class="s-value in">+${fmtNum(grandIn)}</div></div>
+    <div class="s-item"><div class="s-label">Total Qty Out</div><div class="s-value out">−${fmtNum(grandOut)}</div></div>
+    <div class="s-item"><div class="s-label">Total Value In</div><div class="s-value in">₹${fmtNum(Math.round(grandValueIn))}</div></div>
+    <div class="s-item"><div class="s-label">Total Value Out</div><div class="s-value out">₹${fmtNum(Math.round(grandValueOut))}</div></div>
+    <div class="s-item"><div class="s-label">Net Value</div><div class="s-value">₹${fmtNum(Math.round(grandValueIn+grandValueOut))}</div></div>
+  `;
+
+  ledgerContainer.innerHTML = html;
+  ledgerContainer.querySelectorAll('.day-print-btn').forEach(btn=>{
+    btn.addEventListener('click', () => printLedger(btn.getAttribute('data-print-day')));
+  });
+}
+
+updateAdminUI();
 loadFromStorage();
 </script>
 </body>
